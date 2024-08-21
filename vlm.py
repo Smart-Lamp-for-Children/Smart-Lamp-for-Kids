@@ -3,7 +3,7 @@ import os
 import requests
 import json
 
-os.environ["DASHSCOPE_API_KEY"] = "sk-8d2bb08d25b745baadd9cb3076ec7786"
+os.environ["DASHSCOPE_API_KEY"] = ""
 
 
 def get_response(image_url: str, task: str):
