@@ -4,15 +4,13 @@ import requests
 import json
 
 os.environ["DASHSCOPE_API_KEY"] = ""
-
-
-def get_response(image_url: str, task: str):
+def get_response(api_key: str, image_url: str, task: str):
     """
     image_url: 传入图片链接
     task: 任务类型，可选类型：word_recognition, image_description
     """
     client = OpenAI(
-        api_key=os.getenv("DASHSCOPE_API_KEY"),
+        api_key=api_key,
         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1",
     )
     if task == "word_recognition":
@@ -53,6 +51,4 @@ def get_response(image_url: str, task: str):
 
 if __name__=='__main__':
     image_link = "https://s2.loli.net/2024/08/19/L5FJ1DzkGI6NPQl.jpg"
-    # print(get_response(image_link, "word_recognition"))
-    # print('\n')
-    print(get_response(image_link, "image_description"))
+    print(get_response(os.getenv("DASHSCOPE_API_KEY"), image_link, "image_description"))

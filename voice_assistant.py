@@ -7,6 +7,7 @@ import base64
 import json
 from playsound import playsound
 from time import sleep
+from gtts import gTTS
 
 # 自定义模块
 import chat
@@ -35,6 +36,14 @@ stream = pa.open(
     frames_per_buffer=1024
 )
 
+# 生成并播放语音消息的函数
+def play_audio_message(message, filename="temp.mp3"):
+    tts = gTTS(text=message, lang='zh')  # 使用中文语音生成，可以改为其他语言
+    tts.save(filename)
+    playsound(filename)
+    os.remove(filename)  # 播放完后删除临时文件
+
+
 def record_audio():
     maxnothing = 100
     sdv = silence_detect.Vad()
@@ -44,7 +53,7 @@ def record_audio():
     os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
 
     sleep(1)
-    print('请开始说话')
+    play_audio_message("请说话，我在听着呢。")
 
     num=0
     while True:
@@ -62,17 +71,15 @@ def record_audio():
                 wf.setsampwidth(pa.get_sample_size(pyaudio.paInt16))
                 wf.setframerate(16000)
                 wf.writeframes(b''.join(frames))
-            break
+            play_audio_message("好的，我明白了。")
+            os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
+            return True, b''.join(frames)
         else:
             count += 1
             if count == maxnothing:
-                print('you said nothing')
-                break
-
-    print('done')
-    os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
-    
-    return b''.join(frames)
+                play_audio_message("对不起，我没有听清楚您的指令。")
+                os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
+                return False, b''.join(frames)
 
 def save_audio(frames, file_path):
     with wave.open(file_path, 'wb') as wf:
@@ -87,7 +94,7 @@ def main():
         detector.start()
         
         # 2. 录制用户的语音输入
-        recorded_audio = record_audio()
+        _, recorded_audio = record_audio()
         audio_file_path = "recorded_audio.wav"
         save_audio(recorded_audio, audio_file_path)
         
