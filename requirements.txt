@@ -22,3 +22,7 @@ pydub==0.25.1
 pyee==11.1.0
 pyparsing==3.1.2
 python-dateutil==2.9.0.post0
+
+rpi-lgpio==0.6
+time=='newest version'
+threading=='newest version'
