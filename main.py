@@ -15,22 +15,24 @@ stt_access_token = "***" # 百度语音识别访问密钥
 tts_access_token = "***"  # 百度语音合成访问密钥
 dashscope_api_key = "***" # Dashscope访问密钥
 
-# 初始化唤醒词检测器
-detector = hotword_detect.PorcupineWakeWordDetector(access_key, keyword_paths, model_path)
-# 初始化音频流
-pa = pyaudio.PyAudio()
-stream = pa.open(
-    format=pyaudio.paInt16,
-    channels=1,
-    rate=16000,
-    input=True,
-    frames_per_buffer=1024
-)
+# 这一部分初始化已经在voice_assistant.py中完成了
+
+# # 初始化唤醒词检测器
+# detector = hotword_detect.PorcupineWakeWordDetector(access_key, keyword_paths, model_path)
+# # 初始化音频流
+# pa = pyaudio.PyAudio()
+# stream = pa.open(
+#     format=pyaudio.paInt16,
+#     channels=1,
+#     rate=16000,
+#     input=True,
+#     frames_per_buffer=1024
+# )
 
 def main():
     while True:
         # 1. 唤醒词检测
-        detector.start()
+        voice_assistant.detector.start()
         
         # 2. 录制用户的语音输入
         status, recorded_audio = voice_assistant.record_audio()
@@ -56,7 +58,7 @@ def main():
             if "play_music" in nlp_result["actions"]:
                 response = "好的，我来为你播放音乐。"
                 voice_generate.text_to_speech(response, tts_access_token)
-                playsound('output.mp3')
+                voice_assistant.playsound('output.mp3')
                 # TODO: 播放音乐
             else:
                 if "read_out" in nlp_result["actions"]:
@@ -74,10 +76,10 @@ def main():
                     # TODO: 调暗灯光
                     response = "好的，我已经调暗了灯光。"
                 voice_generate.text_to_speech(response, tts_access_token)
-                playsound('output.mp3')
+                voice_assistant.playsound('output.mp3')
         else:
             print("对不起，我没有理解你的意思。")
-            playsound('error_sound.wav')
+            voice_assistant.playsound('error_sound.wav')
             
         sleep(1)  # 暂停一段时间再继续等待唤醒词
 
