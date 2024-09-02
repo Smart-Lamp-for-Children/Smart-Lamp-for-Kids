@@ -7,6 +7,7 @@ import hotword_detect
 import silence_detect
 import vlm
 from lamp_control import LampControl
+import time
 
 # api参数和模型文件地址
 access_key = "***"  # Picovoice访问密钥
@@ -77,7 +78,7 @@ def main():
                     # TODO: 调亮灯光
                     response = "好的，我已经调亮了灯光。"
                 elif "decrease_brightness" in nlp_result["actions"]:
-                    # TODO: 调暗灯光
+                    # TODO: 调暗灯光 
                     response = "好的，我已经调暗了灯光。"
                 voice_generate.text_to_speech(response, tts_access_token)
                 voice_assistant.playsound('output.mp3')
@@ -85,7 +86,7 @@ def main():
             print("对不起，我没有理解你的意思。")
             voice_assistant.playsound('error_sound.wav')
             
-        sleep(1)  # 暂停一段时间再继续等待唤醒词
+        time.sleep(1)  # 暂停一段时间再继续等待唤醒词
 
 if __name__ == "__main__":
     main()
