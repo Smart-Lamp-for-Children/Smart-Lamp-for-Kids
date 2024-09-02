@@ -1,0 +1,11 @@
+#中文语义-对应代码-进行操作
+
+调亮灯光 - "add_brightness" -将灯光亮度增大10%
+调暗灯光 - "decrease_brightness" - 将灯光亮度减少10%
+调整灯光至num - “change_brightness_to num” 
+
+开灯 - “turn_on” 
+关灯 - "turn_off"
+
+#maybe?
+光控模式 - "light_control" 

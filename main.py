@@ -6,6 +6,7 @@ import voice_recognize
 import hotword_detect
 import silence_detect
 import vlm
+from lamp_control import LampControl
 
 # api参数和模型文件地址
 access_key = "***"  # Picovoice访问密钥
@@ -14,6 +15,9 @@ model_path = "***"  # 语音识别模型文件路径
 stt_access_token = "***" # 百度语音识别访问密钥
 tts_access_token = "***"  # 百度语音合成访问密钥
 dashscope_api_key = "***" # Dashscope访问密钥
+
+# 初始化灯控制器,初始时打开灯
+lamp= LampControl(True)
 
 # 这一部分初始化已经在voice_assistant.py中完成了
 
