@@ -8,6 +8,7 @@ import silence_detect
 import vlm
 from lamp_control import LampControl
 import time
+import os
 
 # api参数和模型文件地址
 access_key = "***"  # Picovoice访问密钥
@@ -67,11 +68,11 @@ def main():
                 # TODO: 播放音乐
             else:
                 if "read_out" in nlp_result["actions"]:
-                    # TODO: 拍照片
+                    os.system("libcamera-jpeg -o book.jpg -t 2000")
                     # TODO: 照片上传云端生成链接image_url
                     response = vlm.get_response(dashscope_api_key, image_url, "word_recognition")
                 elif "describe" in nlp_result["actions"]:
-                    # TODO: 拍照片
+                    os.system("libcamera-jpeg -o book.jpg -t 2000")
                     # TODO: 照片上传云端生成链接image_url
                     response = vlm.get_response(dashscope_api_key, image_url, "image_description")
                 elif "add_brightness" in nlp_result["actions"]:

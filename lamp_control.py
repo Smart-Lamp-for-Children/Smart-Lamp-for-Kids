@@ -19,6 +19,10 @@ class LampControl:
     def change_brightness(self, brightness: float):
         # 改变灯的亮度
         self.brightness = brightness
+        if self.brightness < 0:
+            self.brightness = 0
+        if self.brightness > 100:
+            self.brightness = 100
         self.PWM.change_dc(self.brightness)
 
     def change_on_off(self, on: bool):
