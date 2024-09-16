@@ -5,7 +5,7 @@ import io
 import struct
 import base64
 import json
-import glob
+import glob #用于检测并清空temporary_storage中的文件
 from playsound import playsound
 from time import sleep
 
@@ -114,7 +114,7 @@ def main():
             print("对不起，我没有理解你的意思。")
             playsound(config.error_sound_path) ###音频播放(可能需要改动)(此处可正常运行)
         
-        [os.remove(file) for file in glob.glob("temporary_storage/*")]
+        [os.remove(file) for file in glob.glob("temporary_storage/*")]  ####检测并清空temporary_storage中的文件，可以考虑删除并在main中与图像模块集成
         
         sleep(1)  # 暂停一段时间再继续等待唤醒词
 
