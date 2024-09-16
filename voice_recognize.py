@@ -4,6 +4,8 @@ import base64
 import json
 import os
 
+import config
+
 def convert_audio(input_file, output_file):
     audio = AudioSegment.from_file(input_file)
     audio = audio.set_frame_rate(16000).set_channels(1).set_sample_width(2)
@@ -40,7 +42,7 @@ def stt(audio_data, access_token):
 def main():
     input_audio_file_path = "test.wav"
     converted_audio_file_path = "converted_test.wav"
-    access_token = "***"
+    access_token = config.voice_access_token
 
     convert_audio(input_audio_file_path, converted_audio_file_path)
 

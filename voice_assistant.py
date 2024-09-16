@@ -5,8 +5,9 @@ import io
 import struct
 import base64
 import json
+import glob
+from playsound import playsound
 from time import sleep
-from gtts import gTTS
 
 # 自定义模块
 import chat
@@ -14,16 +15,16 @@ import voice_generate
 import voice_recognize
 import hotword_detect
 import silence_detect
+import config
 
 # 设置api参数和模型文件地址
-access_key = "***"
-keyword_paths = ["***"]
-model_path = "***"
-stt_access_token = "***"
-tts_access_token = "***"
+hotword_access_key = config.hotword_access_key
+keyword_paths = config.hotword_key_word_path
+model_path = config.hotword_model_path
+voice_access_token = config.voice_access_token
 
 # 初始化唤醒词检测器
-detector = hotword_detect.PorcupineWakeWordDetector(access_key, keyword_paths, model_path)
+detector = hotword_detect.PorcupineWakeWordDetector(hotword_access_key, keyword_paths, model_path)
 
 # 初始化音频流
 pa = pyaudio.PyAudio()
@@ -35,33 +36,16 @@ stream = pa.open(
     frames_per_buffer=1024
 )
 
-def playsound(filename:str):
-    #TO DO
-    os.system('aplay -Dhw:0,0 '+filename)
- 
-# 生成并播放语音消息的函数
-# def play_audio_message(message, filename="temp.mp3"):
-#     tts = gTTS(text=message, lang='zh')  # 使用中文语音生成，可以改为其他语言
-#     tts.save(filename)
-#     playsound(filename)
-#     os.remove(filename)  # 播放完后删除临时文件
-
-
 def record_audio():
     maxnothing = 100
     sdv = silence_detect.Vad()
     frames = []
     f = io.BytesIO()
     count = 0
-    os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
+    #playsound(config.prompt_tone_path) ###音频播放(可能需要改动)(在windows上没跑通，原因不明) #去除不影响功能，可考虑不在录音开始和结束时播放提示音
 
     sleep(1)
-################################################################
-#                                                              #
-#               Audio Output                                   #
-#                                                              #
-################################################################
-    print("请说话，我在听着呢。")
+    print('请开始说话')
 
     num=0
     while True:
@@ -79,26 +63,17 @@ def record_audio():
                 wf.setsampwidth(pa.get_sample_size(pyaudio.paInt16))
                 wf.setframerate(16000)
                 wf.writeframes(b''.join(frames))
-
-################################################################
-#                                                              #
-#               Audio Output                                   #
-#                                                              #
-################################################################
-            print("好的，我明白了。")
-            os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
-            return True, b''.join(frames)
+            break
         else:
             count += 1
             if count == maxnothing:
-################################################################
-#                                                              #
-#               Audio Output                                   #
-#                                                              #
-################################################################
-                print("对不起，我没有听清楚您的指令。")
-                os.system(r'powershell -c (New-Object Media.SoundPlayer "C:\Users\**\Downloads\提示音.wav").PlaySync();')
-                return False, b''.join(frames)
+                print('you said nothing')
+                break
+
+    print('done')
+    #playsound(config.prompt_tone_path) ###音频播放(可能需要改动)(在windows上没跑通，原因不明) #去除不影响功能，可考虑不在录音开始和结束时播放提示音
+    
+    return b''.join(frames)
 
 def save_audio(frames, file_path):
     with wave.open(file_path, 'wb') as wf:
@@ -113,18 +88,18 @@ def main():
         detector.start()
         
         # 2. 录制用户的语音输入
-        _, recorded_audio = record_audio()
-        audio_file_path = "recorded_audio.wav"
+        recorded_audio = record_audio()
+        audio_file_path = "temporary_storage/recorded_audio.wav"
         save_audio(recorded_audio, audio_file_path)
         
         # 3. 将录音文件转换并进行语音识别
-        converted_audio_path = "converted_audio.wav"
+        converted_audio_path = "temporary_storage/converted_audio.wav"
         voice_recognize.convert_audio(audio_file_path, converted_audio_path)
 
         with open(converted_audio_path, 'rb') as audio_file:
             audio_data = audio_file.read()
 
-        recognized_text = voice_recognize.stt(audio_data, stt_access_token)
+        recognized_text = voice_recognize.stt(audio_data, voice_access_token)
         print(f"识别的文本: {recognized_text}")
         
         # 4. 使用自然语言处理模块理解用户的意图
@@ -133,11 +108,13 @@ def main():
 
         # 5. 将NLP的回复内容转换为语音
         if nlp_result["is_understood"]:
-            voice_generate.text_to_speech(nlp_result["response"], tts_access_token)
-            playsound('output.mp3')
+            voice_generate.text_to_speech(nlp_result["response"], voice_access_token)
+            playsound(config.output_sound_path) ###音频播放(可能需要改动)(此处可正常运行)
         else:
             print("对不起，我没有理解你的意思。")
-            playsound('error_sound.wav')
+            playsound(config.error_sound_path) ###音频播放(可能需要改动)(此处可正常运行)
+        
+        [os.remove(file) for file in glob.glob("temporary_storage/*")]
         
         sleep(1)  # 暂停一段时间再继续等待唤醒词
 

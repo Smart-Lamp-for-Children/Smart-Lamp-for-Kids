@@ -1,4 +1,7 @@
+import os
 import requests
+from playsound import playsound
+import config
 
 def read_text_from_file(file_path):
     """读取指定路径的文本文件"""
@@ -25,23 +28,31 @@ def text_to_speech(text, access_token):
 
     response = requests.post(url, data=params)
 
+    # 确保 temporary_storage 文件夹存在
+    folder_path = os.path.join(os.path.dirname(__file__), 'temporary_storage')
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    
+    # 构建保存文件路径
+    file_path = os.path.join(folder_path, "output.mp3")
+
     if response.status_code == 200:
         # 保存音频文件
-        with open("output.mp3", "wb") as f:
+        with open(file_path, "wb") as f:
             f.write(response.content)
-        print("语音合成成功，文件已保存为 output.mp3")
+        print(f"语音合成成功，文件已保存为 {file_path}")
     else:
         print("语音合成失败:", response.text)
 
 def main():
-    access_token = "***"  # Access Token
-    text_file_path = r"C:\Users\**\Downloads\text_to_speak.txt"  # 文本文件路径
+    access_token = config.voice_access_token  # Access Token
+    test_text_path = config.test_text_path  # 文本文件路径
 
     # 读取文本文件内容
-    text = read_text_from_file(text_file_path)
+    text = read_text_from_file(test_text_path)
 
     # 合成语音
     text_to_speech(text, access_token)
-
+    playsound(config.output_sound_path)
 if __name__ == '__main__':
     main()

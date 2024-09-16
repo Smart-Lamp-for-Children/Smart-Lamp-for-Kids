@@ -2,6 +2,8 @@ import pvporcupine
 import pyaudio
 import struct
 
+import config
+
 class PorcupineWakeWordDetector:
     def __init__(self, access_key, keyword_paths, model_path):
         self.porcupine = pvporcupine.create(
@@ -39,9 +41,9 @@ class PorcupineWakeWordDetector:
             self.porcupine.delete()
 
 def main():
-    access_key = "***"  # Picovoice访问密钥
-    keyword_paths = ["C:\\Users\\**\\Downloads\\测测_zh_windows_v3_0_0\\测测_zh_windows_v3_0_0.ppn"]  # 关键词文件路径
-    model_path = "C:\\Users\\**\\Downloads\\porcupine_params_zh.pv"  # 模型文件路径
+    access_key = config.hotword_access_key  # Picovoice访问密钥
+    keyword_paths = config.hotword_key_word_path  # 关键词文件路径
+    model_path = config.hotword_model_path  # 模型文件路径
 
     detector = PorcupineWakeWordDetector(access_key, keyword_paths, model_path)
     detector.start()

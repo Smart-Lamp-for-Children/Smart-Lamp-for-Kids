@@ -6,6 +6,8 @@ import numpy as np
 import pyaudio
 import matplotlib.pyplot as plt
 
+import config
+
 SUCCESS = 0
 FAIL = 1
 
@@ -113,7 +115,7 @@ class Vad(object):
             self.frames.append(stream_data)
 
         if res == 3 and len(self.frames) > 25:
-            wf = wave.open('C:\\Users\\文磊\\Downloads\\' + str(num) + ".wav", 'wb')
+            wf = wave.open(config.silence_input_path + str(num) + ".wav", 'wb')
             wf.setnchannels(1)
             wf.setsampwidth(audio2.get_sample_size(FORMAT))
             wf.setframerate(16000)

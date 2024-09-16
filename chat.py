@@ -2,10 +2,12 @@
 import os
 import qianfan
 import json
+
+import config
 #【推荐】使用安全认证AK/SK鉴权，通过环境变量初始化认证信息
 # 替换下列示例中参数，安全认证Access Key替换your_iam_ak，Secret Key替换your_iam_sk
-os.environ["QIANFAN_ACCESS_KEY"] = "***"
-os.environ["QIANFAN_SECRET_KEY"] = "***"
+os.environ["QIANFAN_ACCESS_KEY"] = config.chat_access_key
+os.environ["QIANFAN_SECRET_KEY"] = config.chat_secret_key
 
 sys_promt_head='您现在是面向儿童的绘本阅读辅助智能台灯的语音助手。您的任务是接收用户通过文字输入的指令，理解其意图，并生成一个字典格式的回复。这个回复需要包含以下三个部分：      1. **理解状态** (`is_understood`): 一个布尔值，`true`表示完全理解用户的操作要求，`false`则表示存在理解上的困难或无法执行。      2. **执行功能列表** (`actions`): 一个字符串数组，用于详细列出台灯需要执行的具体功能。每个功能作为数组的一个元素，确保台灯的程序能够准确识别并执行。'
 
