@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import oss2
-from oss2.credentials import EnvironmentVariableCredentialsProvider
 import requests
+import config
 
 # 从config.py中获取访问凭证
 auth = oss2.Auth(config.OSS_ACCESS_KEY_ID, config.OSS_ACCESS_KEY_SECRET)
