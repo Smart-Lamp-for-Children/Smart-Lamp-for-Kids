@@ -7,16 +7,19 @@ import hotword_detect
 import silence_detect
 import vlm
 from lamp_control import LampControl
+import config
+
+from playsound import playsound
 import time
 import os
 
 # api参数和模型文件地址
-access_key = "***"  # Picovoice访问密钥
-keyword_paths = ["***"] # 唤醒词文件路径
-model_path = "***"  # 语音识别模型文件路径
-stt_access_token = "***" # 百度语音识别访问密钥
-tts_access_token = "***"  # 百度语音合成访问密钥
-dashscope_api_key = "***" # Dashscope访问密钥
+hotword_access_key = config.hotword_access_key  # Picovoice访问密钥
+keyword_paths = config.hotword_key_word_path # 唤醒词文件路径
+model_path = config.hotword_model_path  # 语音识别模型文件路径
+stt_access_token = config.voice_access_token # 百度语音识别访问密钥
+tts_access_token = config.voice_access_token  # 百度语音合成访问密钥
+dashscope_api_key = config.dashscope_api_key # Dashscope访问密钥
 
 # 初始化灯控制器,初始时打开灯
 lamp= LampControl(True)
@@ -24,7 +27,7 @@ lamp= LampControl(True)
 # 这一部分初始化已经在voice_assistant.py中完成了
 
 # # 初始化唤醒词检测器
-# detector = hotword_detect.PorcupineWakeWordDetector(access_key, keyword_paths, model_path)
+# detector = hotword_detect.PorcupineWakeWordDetector(hotword_access_key, keyword_paths, model_path)
 # # 初始化音频流
 # pa = pyaudio.PyAudio()
 # stream = pa.open(
@@ -64,7 +67,7 @@ def main():
             if "play_music" in nlp_result["actions"]:
                 response = "好的，我来为你播放音乐。"
                 voice_generate.text_to_speech(response, tts_access_token)
-                voice_assistant.playsound('output.mp3')
+                playsound(config.output_sound_path) ###音频播放(可能需要改动)
                 # TODO: 播放音乐
             else:
                 if "read_out" in nlp_result["actions"]:
@@ -82,10 +85,10 @@ def main():
                     # TODO: 调暗灯光 
                     response = "好的，我已经调暗了灯光。"
                 voice_generate.text_to_speech(response, tts_access_token)
-                voice_assistant.playsound('output.mp3')
+                playsound(config.output_sound_path) ###音频播放(可能需要改动)
         else:
             print("对不起，我没有理解你的意思。")
-            voice_assistant.playsound('error_sound.wav')
+            playsound(config.error_sound_path) ###音频播放(可能需要改动)
             
         time.sleep(1)  # 暂停一段时间再继续等待唤醒词
 
