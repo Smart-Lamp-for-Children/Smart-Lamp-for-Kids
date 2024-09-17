@@ -23,7 +23,6 @@ def get_access_token(api_key, secret_key):
     else:
         print("请求失败，状态码:", response.status_code)
 
-# 替换为你自己的API Key和Secret Key
 api_key = config.voice_api_key
 secret_key = config.voice_secret_key
 
