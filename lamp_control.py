@@ -8,7 +8,7 @@ class LampControl:
         # :on_off: 用于控制灯的开关
         self.brightness = 50.0
         self.freq = 1000
-        self.on = on
+        self.on = True
         self.PWM = GPIO.PWM(12,self.freq,self.brightness)
         self.on_off = GPIO.Output(6,self.on)
 

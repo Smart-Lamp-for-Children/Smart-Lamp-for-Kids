@@ -34,6 +34,7 @@ class PWM:
         self.p_list = []
 
         # 设置GPIO引脚并初始化PWM对象
+        print(pwm_pin_num)
         GPIO.setup(pwm_pin_num, GPIO.OUT)
         if isinstance(pwm_pin_num, (list, tuple)):
             for pin in pwm_pin_num:
@@ -47,7 +48,7 @@ class PWM:
             for p in self.p_list:
                 p.start(self.dc)
             while not self.stop_event.is_set():
-                if self.dc_change_eventis_set():
+                if self.dc_change_event.is_set():
                     for p in self.p_list:
                         p.ChangeDutyCycle(self.dc)
                     self.dc_change_event.clear()

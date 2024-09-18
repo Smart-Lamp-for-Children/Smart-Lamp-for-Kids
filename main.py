@@ -7,11 +7,18 @@ import hotword_detect
 import silence_detect
 import vlm
 from lamp_control import LampControl
-import config
-
 from playsound import playsound
 import time
 import os
+
+import sys
+# 获取上级目录的路径
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# 将上级目录添加到 sys.path 中
+sys.path.insert(0, parent_dir)
+import config
+
 
 # api参数和模型文件地址
 hotword_access_key = config.hotword_access_key  # Picovoice访问密钥
@@ -44,9 +51,8 @@ def main():
         voice_assistant.detector.start()
         
         # 2. 录制用户的语音输入
-        status, recorded_audio = voice_assistant.record_audio()
-        if not status:
-            continue
+        recorded_audio = voice_assistant.record_audio()
+
         audio_file_path = "recorded_audio.wav"
         voice_assistant.save_audio(recorded_audio, audio_file_path)
         
@@ -61,22 +67,24 @@ def main():
         # 4. 使用自然语言处理模块理解用户的意图
         nlp_result = chat.response(recognized_text)
         print(f"NLU结果: {nlp_result}")
-        
+        voice_generate.text_to_speech(response, tts_access_token)
+
         # 5. 根据用户的意图生成回复
         if nlp_result["is_understood"]:
             if "play_music" in nlp_result["actions"]:
                 response = "好的，我来为你播放音乐。"
-                voice_generate.text_to_speech(response, tts_access_token)
                 playsound(config.output_sound_path) ###音频播放(可能需要改动)
                 # TODO: 播放音乐
             else:
                 if "read_out" in nlp_result["actions"]:
                     os.system("libcamera-jpeg -o book.jpg -t 2000")
                     # TODO: 照片上传云端生成链接image_url
+                    image_url = "https://k.sinaimg.cn/n/translate/773/w1080h493/20180324/btp3-fysnevm7077408.jpg/w700d1q75cms.jpg"
                     response = vlm.get_response(dashscope_api_key, image_url, "word_recognition")
                 elif "describe" in nlp_result["actions"]:
                     os.system("libcamera-jpeg -o book.jpg -t 2000")
                     # TODO: 照片上传云端生成链接image_url
+                    image_url = "https://k.sinaimg.cn/n/translate/773/w1080h493/20180324/btp3-fysnevm7077408.jpg/w700d1q75cms.jpg"
                     response = vlm.get_response(dashscope_api_key, image_url, "image_description")
                 elif "add_brightness" in nlp_result["actions"]:
                     # TODO: 调亮灯光
@@ -88,7 +96,7 @@ def main():
                 playsound(config.output_sound_path) ###音频播放(可能需要改动)
         else:
             print("对不起，我没有理解你的意思。")
-            playsound(config.error_sound_path) ###音频播放(可能需要改动)
+            playsound(config.output_sound_path) ###音频播放(可能需要改动)
             
         time.sleep(1)  # 暂停一段时间再继续等待唤醒词
 

@@ -3,6 +3,12 @@ import os
 import qianfan
 import json
 
+import sys
+# 获取上级目录的路径
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# 将上级目录添加到 sys.path 中
+sys.path.insert(0, parent_dir)
 import config
 #【推荐】使用安全认证AK/SK鉴权，通过环境变量初始化认证信息
 # 替换下列示例中参数，安全认证Access Key替换your_iam_ak，Secret Key替换your_iam_sk

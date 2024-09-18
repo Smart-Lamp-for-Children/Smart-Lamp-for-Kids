@@ -138,7 +138,7 @@ class Vad(object):
                 self.silence = 0
                 self.count += 1
             # 可能处于语音段，能量处于浊音段，过零率在清音或浊音段
-            elif amp > self.amp2 or zcr > self.zcr2:
+            elif (amp > self.amp2 or zcr > self.zcr2) and (amp < self.amp1):
                 status = 2
                 self.count += 1
             # 静音状态
@@ -149,9 +149,11 @@ class Vad(object):
         # 2=语音段
         elif self.cur_status == 2:
             # 保持在语音段，能量处于浊音段，过零率在清音或浊音段
-            if amp > self.amp2 or zcr > self.zcr2:
+            if (amp > self.amp2 or zcr > self.zcr2) and (amp < self.amp1):
                 self.count += 1
                 status = 2
+                print(amp)
+                print(zcr)
             # 语音将结束
             else:
                 # 静音还不够长，尚未结束
