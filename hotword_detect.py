@@ -6,14 +6,17 @@ import config
 
 class PorcupineWakeWordDetector:
     def __init__(self, access_key, keyword_paths, model_path):
+        print("Initializing Porcupine...")
         self.porcupine = pvporcupine.create(
             access_key=access_key,
             keyword_paths=keyword_paths,
             model_path=model_path
         )
+        print("Porcupine initialized.")
         self.audio_stream = None
 
     def start(self):
+        print("Initializing PyAudio...")
         pa = pyaudio.PyAudio()
         self.audio_stream = pa.open(
             rate=self.porcupine.sample_rate,
@@ -22,6 +25,7 @@ class PorcupineWakeWordDetector:
             input=True,
             frames_per_buffer=self.porcupine.frame_length
         )
+        print("PyAudio initialized.")
 
         print("Listening for wake word...")
 
