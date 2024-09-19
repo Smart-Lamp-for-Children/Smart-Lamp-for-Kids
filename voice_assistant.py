@@ -15,8 +15,14 @@ import voice_generate
 import voice_recognize
 import hotword_detect
 import silence_detect
-import config
 
+import sys
+# 获取上级目录的路径
+parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# 将上级目录添加到 sys.path 中
+sys.path.insert(0, parent_dir)
+import config
 # 设置api参数和模型文件地址
 hotword_access_key = config.hotword_access_key
 keyword_paths = config.hotword_key_word_path
@@ -37,7 +43,6 @@ def record_audio():
     maxnothing = 100
     sdv = silence_detect.Vad()
     frames = []
-    f = io.BytesIO()
     count = 0
     #playsound(config.prompt_tone_path) ###音频播放(可能需要改动)(在windows上没跑通，原因不明) #去除不影响功能，可考虑不在录音开始和结束时播放提示音
 
@@ -49,24 +54,16 @@ def record_audio():
 
         bytes_obv = stream.read(1024, exception_on_overflow=False)
         sdv.check_ontime(num,bytes_obv)
-        print(num)
         num = num + 1
 
         if sdv.cur_status == 2:
             frames.append(bytes_obv)
-        elif sdv.cur_status == 3:
-            with wave.open(f, 'wb') as wf:
-                wf.setnchannels(1)
-                wf.setsampwidth(pa.get_sample_size(pyaudio.paInt16))
-                wf.setframerate(16000)
-                wf.writeframes(b''.join(frames))
-            break
-        else:
+            continue
+        elif sdv.cur_status == 0:
             count += 1
-            if count == maxnothing:
-                print('you said nothing')
+            if count >= maxnothing:
                 break
-
+        break
     print('done')
     #playsound(config.prompt_tone_path) ###音频播放(可能需要改动)(在windows上没跑通，原因不明) #去除不影响功能，可考虑不在录音开始和结束时播放提示音
     
@@ -112,7 +109,7 @@ def main():
             print("对不起，我没有理解你的意思。")
             playsound(config.error_sound_path) ###音频播放(可能需要改动)(此处可正常运行)
         
-        [os.remove(file) for file in glob.glob("temporary_storage/*")]  ####检测并清空temporary_storage中的文件，可以考虑删除并在main中与图像模块集成
+        # [os.remove(file) for file in glob.glob("temporary_storage/*")]  ####检测并清空temporary_storage中的文件，可以考虑删除并在main中与图像模块集成
         
         sleep(1)  # 暂停一段时间再继续等待唤醒词
 

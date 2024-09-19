@@ -50,10 +50,11 @@ def main():
         # 1. 唤醒词检测
         voice_assistant.detector.start()
         
+        input("Press Enter to exit...")
         # 2. 录制用户的语音输入
         recorded_audio = voice_assistant.record_audio()
 
-        audio_file_path = "recorded_audio.wav"
+        audio_file_path = "temporary_storage/recorded_audio.wav"
         voice_assistant.save_audio(recorded_audio, audio_file_path)
         
         # 3. 将录音文件转换并进行语音识别
@@ -66,6 +67,7 @@ def main():
         
         # 4. 使用自然语言处理模块理解用户的意图
         nlp_result = chat.response(recognized_text)
+        response=nlp_result["response"]
         print(f"NLU结果: {nlp_result}")
         voice_generate.text_to_speech(response, tts_access_token)
 

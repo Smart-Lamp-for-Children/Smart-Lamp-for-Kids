@@ -39,15 +39,15 @@ def STE(curFrame):
 class Vad(object):
     def __init__(self):
         # 初始短时能量高门限
-        self.amp1 = 940
+        self.amp1 = 94000
         # 初始短时能量低门限
-        self.amp2 = 120
+        self.amp2 = 20000
         # 初始短时过零率高门限
-        self.zcr1 = 30
+        self.zcr1 = 50
         # 初始短时过零率低门限
-        self.zcr2 = 2
+        self.zcr2 = 10
         # 允许最大静音长度
-        self.maxsilence = 45  # 允许换气的最长时间
+        self.maxsilence = 100  # 允许换气的最长时间
         # 语音的最短长度
         self.minlen = 40  # 过滤小音量
         # 偏移值
@@ -115,6 +115,7 @@ class Vad(object):
             self.frames.append(stream_data)
 
         if res == 3 and len(self.frames) > 25:
+            print(num, "说话结束！！！！！！！！！！！！！！！！！！！！！！！！")
             wf = wave.open(config.silence_input_path + str(num) + ".wav", 'wb')
             wf.setnchannels(1)
             wf.setsampwidth(audio2.get_sample_size(FORMAT))
@@ -138,7 +139,7 @@ class Vad(object):
                 self.silence = 0
                 self.count += 1
             # 可能处于语音段，能量处于浊音段，过零率在清音或浊音段
-            elif (amp > self.amp2 or zcr > self.zcr2) and (amp < self.amp1):
+            elif (amp > self.amp2 and zcr <self.zcr1 ) or (zcr > self.zcr2 and amp < self.amp1) :
                 status = 2
                 self.count += 1
             # 静音状态
@@ -149,7 +150,7 @@ class Vad(object):
         # 2=语音段
         elif self.cur_status == 2:
             # 保持在语音段，能量处于浊音段，过零率在清音或浊音段
-            if (amp > self.amp2 or zcr > self.zcr2) and (amp < self.amp1):
+            if (amp > self.amp2 and zcr <self.zcr1 ) or (zcr > self.zcr2 and amp < self.amp1) :
                 self.count += 1
                 status = 2
                 print(amp)
