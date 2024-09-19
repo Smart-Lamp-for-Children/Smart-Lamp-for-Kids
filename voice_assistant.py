@@ -23,9 +23,6 @@ keyword_paths = config.hotword_key_word_path
 model_path = config.hotword_model_path
 voice_access_token = config.voice_access_token
 
-# 初始化唤醒词检测器
-detector = hotword_detect.PorcupineWakeWordDetector(hotword_access_key, keyword_paths, model_path)
-
 # 初始化音频流
 pa = pyaudio.PyAudio()
 stream = pa.open(
@@ -85,6 +82,7 @@ def save_audio(frames, file_path):
 def main():
     while True:
         # 1. 唤醒词检测
+        detector = hotword_detect.PorcupineWakeWordDetector(hotword_access_key, keyword_paths, model_path)
         detector.start()
         
         # 2. 录制用户的语音输入
