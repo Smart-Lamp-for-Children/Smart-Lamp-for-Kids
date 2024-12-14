@@ -27,7 +27,8 @@ import config
 hotword_access_key = config.hotword_access_key
 keyword_paths = config.hotword_key_word_path
 model_path = config.hotword_model_path
-voice_access_token = config.voice_access_token
+voice_generate_app_id = config.xf_appid
+voice_access_token = config.xf_token
 
 # 初始化音频流
 pa = pyaudio.PyAudio()
@@ -103,7 +104,7 @@ def main():
 
         # 5. 将NLP的回复内容转换为语音
         if nlp_result["is_understood"]:
-            voice_generate.text_to_speech(nlp_result["response"], voice_access_token)
+            voice_generate.text_to_speech(nlp_result["response"], voice_generate_app_id , voice_access_token)
             playsound(config.output_sound_path) ###音频播放(可能需要改动)(此处可正常运行)
         else:
             print("对不起，我没有理解你的意思。")
