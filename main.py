@@ -10,6 +10,12 @@ from lamp_control import LampControl
 from playsound import playsound
 import time
 import os
+from openai import OpenAI
+import json
+import oss2
+from oss2.credentials import EnvironmentVariableCredentialsProvider
+auth = oss2.ProviderAuth(EnvironmentVariableCredentialsProvider())
+bucket = oss2.Bucket(auth, 'https://oss-cn-hangzhou.aliyuncs.com', 'lampbucket')
 
 import sys
 # 获取上级目录的路径
@@ -81,12 +87,18 @@ def main():
                 if "read_out" in nlp_result["actions"]:
                     os.system("libcamera-jpeg -o book.jpg -t 2000")
                     # TODO: 照片上传云端生成链接image_url
-                    image_url = "https://k.sinaimg.cn/n/translate/773/w1080h493/20180324/btp3-fysnevm7077408.jpg/w700d1q75cms.jpg"
+                    bucket.put_object_from_file('test/new.jpg', 'book.jpg')
+                    object_name = 'test/new.jpg'
+                    image_url = bucket.sign_url('GET', object_name, 3600, slash_safe=True)
+                    # image_url = "https://k.sinaimg.cn/n/translate/773/w1080h493/20180324/btp3-fysnevm7077408.jpg/w700d1q75cms.jpg"
                     response = vlm.get_response(dashscope_api_key, image_url, "word_recognition")
                 elif "describe" in nlp_result["actions"]:
                     os.system("libcamera-jpeg -o book.jpg -t 2000")
                     # TODO: 照片上传云端生成链接image_url
-                    image_url = "https://k.sinaimg.cn/n/translate/773/w1080h493/20180324/btp3-fysnevm7077408.jpg/w700d1q75cms.jpg"
+                    bucket.put_object_from_file('test/new.jpg', 'book.jpg')
+                    object_name = 'test/new.jpg'
+                    image_url = bucket.sign_url('GET', object_name, 3600, slash_safe=True)
+                    # image_url = "https://k.sinaimg.cn/n/translate/773/w1080h493/20180324/btp3-fysnevm7077408.jpg/w700d1q75cms.jpg"
                     response = vlm.get_response(dashscope_api_key, image_url, "image_description")
                 elif "add_brightness" in nlp_result["actions"]:
                     # TODO: 调亮灯光
